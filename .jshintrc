@@ -35,6 +35,8 @@
     "unused"        : true,
 
     "globals" : {
+        "before"    : true,
+        "after"     : true,
         "it"        : true,
         "console"   : true,
         "should"    : true,
