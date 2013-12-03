@@ -27,6 +27,8 @@ var util = require('util');
  * Checks if a TCP port is in use by creating the socket and binding it to the
  * target port. Once bound, successfully, it's assume the port is availble.
  * After the socket is closed or in error, the promise is resolved.
+ * Note: you have to be super user to correctly test system ports (0-1023).
+ *
  * @param {Number} port The port you are curious to see if available.
  * @return {Object} A deferred Q promise.
  */
@@ -35,7 +37,7 @@ function check(port) {
     var deferred = Q.defer();
     var inUse = true;
 
-    if (!is.positiveInt(port) || port > 65535)
+    if (!is.port(port))
         deferred.reject(new Error('Invalid port: '+port));
 
     var server = net.createServer();

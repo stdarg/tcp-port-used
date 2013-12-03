@@ -4,6 +4,8 @@ tcp-port-used
 A simple Node.js module to check if a TCP port is currently in use. It returns
 a promise from the q library.
 
+Note: You have to admin privs to successfully tests system ports (0-1023).
+
 ## Installation
 
     npm install tcp-port-used
