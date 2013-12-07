@@ -4,7 +4,7 @@ tcp-port-used
 A simple Node.js module to check if a TCP localhost port is currently in use. It
 returns a promise from the q library.
 
-Note: You have to admin privs to successfully test system ports (0-1023).
+Note: You must have admin privs to successfully test system ports (0-1023).
 
 ## Installation
 
