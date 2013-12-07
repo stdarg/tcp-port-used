@@ -1,16 +1,17 @@
 tcp-port-used
 =============
 
-A simple Node.js module to check if a TCP port is currently in use. It returns
-a promise from the q library.
+A simple Node.js module to check if a TCP localhost port is currently in use. It
+returns a promise from the q library.
 
-Note: You have to admin privs to successfully tests system ports (0-1023).
+Note: You have to admin privs to successfully test system ports (0-1023).
 
 ## Installation
 
     npm install tcp-port-used
 
-## Example
+## Examples
+To check a port's state:
 
     var tcpPortUsed = require('tcp-port-used');
 
@@ -21,11 +22,79 @@ Note: You have to admin privs to successfully tests system ports (0-1023).
         console.error('Error on check: '+err.message);
     });
 
+    tcpPortUsed.waitUntilFree(44201, 500, 4000)
+    .then(function() {
+        console.log('Port 44201 is now available!');
+    }, function(err) {
+        console.error(err.message);
+    });
+
+To wait until a port is available:
+
+    tcpPortUsed.waitUntilFree(44203, 500, 4000)
+    .then(function() {
+        console.log('Port 44203 is now free.');
+    }, function(err) {
+        console.loh('Error: ', error.message);
+    });
+
+To wait until a port is accepting connections:
+
+    tcpPortUsed.waitUntilUsed(44204, 500, 4000)
+    .then(function() {
+        console.log('Port 44204 is now in use.');
+    }, function(err) {
+        console.loh('Error: ', error.message);
+    });
+
 ## API
 
+
 ### check(port)
-Checks to see if the port in question is in use. Returns a deferred promise
-that resolves to true if the socket is in use and false otherwise.
+Checks if a TCP port is in use by creating the socket and binding it to the
+target port. Once bound, successfully, it's assume the port is availble.
+After the socket is closed or in error, the promise is resolved.
+Note: you have to be super user to correctly test system ports (0-1023).
+
+**Param:**
+
+**Number** *port* The port you are curious to see if available.
+
+**Returns:**
+
+**Object** A deferred Q promise.
+
+### waitUntilFree(port, [retryTimeMs], [timeOutMs])
+Creates a deferred promise and fulfills it only when the socket is free.
+Will retry on an interval specified in retryTimeMs.
+Note: you have to be super user to correctly test system ports (0-1023).
+
+**Params:**
+
+* **Number** *port* a valid TCP port number
+* **Number** *[retryTimeMs]* the retry interval in milliseconds - defaultis is 100ms.
+* **Number** *[timeOutMs]* the amount of time to wait until port is free. Default 300ms.
+
+**Returns:**
+
+**Object** A deferred Q promise.
+
+### waitUntilUsed(port, [retryTimeMs], [timeOutMs])
+
+Creates a deferred promise and fulfills it only when the socket is used.
+Will retry on an interval specified in retryTimeMs.
+Note: you have to be super user to correctly test system ports (0-1023).
+
+**Params:**
+
+* **Number** *port* a valid TCP port number
+* **Number** *[retryTimeMs]* the retry interval in milliseconds - defaultis is 500ms
+* **Number** *[timeOutMs]* the amount of time to wait until port is free
+
+**Returns:**
+
+**Object** A deferred Q promise.
+
 
 ## License
 
