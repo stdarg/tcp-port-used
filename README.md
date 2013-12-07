@@ -22,13 +22,6 @@ To check a port's state:
         console.error('Error on check: '+err.message);
     });
 
-    tcpPortUsed.waitUntilFree(44201, 500, 4000)
-    .then(function() {
-        console.log('Port 44201 is now available!');
-    }, function(err) {
-        console.error(err.message);
-    });
-
 To wait until a port is available:
 
     tcpPortUsed.waitUntilFree(44203, 500, 4000)
