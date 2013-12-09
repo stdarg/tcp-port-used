@@ -57,7 +57,7 @@ Note: you have to be super user to correctly test system ports (0-1023).
 
 **Object** A deferred Q promise.
 
-### waitUntilFree(port, [retryTimeMs], [timeOutMs])
+### waitUntilFree(port [, retryTimeMs] [, timeOutMs])
 Creates a deferred promise and fulfills it only when the socket is free.
 Will retry on an interval specified in retryTimeMs.
 Note: you have to be super user to correctly test system ports (0-1023).
@@ -72,7 +72,7 @@ Note: you have to be super user to correctly test system ports (0-1023).
 
 **Object** A deferred Q promise.
 
-### waitUntilUsed(port, [retryTimeMs], [timeOutMs])
+### waitUntilUsed(port [, retryTimeMs] [, timeOutMs])
 
 Creates a deferred promise and fulfills it only when the socket is used.
 Will retry on an interval specified in retryTimeMs.
