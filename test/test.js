@@ -115,7 +115,7 @@ describe('check functionality for unused port', function() {
     });
 });
 
-describe('waitUntilFree functionality for used port', function() {
+describe('waitUntilFree', function() {
     this.timeout(5000);
 
     before(function(cb) {
@@ -124,13 +124,42 @@ describe('waitUntilFree functionality for used port', function() {
         });
     });
 
-    it('Should reject promise for used port number: 44202', function(done) {
+    it('Should reject promise for used port number after timeout', function(done) {
         tcpPortUsed.waitUntilFree(44203, 500, 4000)
         .then(function() {
             done(new Error('waitUntilFree unexpectedly succeeded'));
         }, function(err) {
             if (err.message === 'waitUntilFree: timeout after 4000 ms.')
                 done();
+        });
+    });
+
+    it('Should fufill promise for free port number', function(done) {
+        tcpPortUsed.waitUntilFree(44205, 500, 4000)
+        .then(function() {
+            done();
+        }, function(err) {
+            done(err);
+        });
+    });
+
+    it('Should fufill promise for free port number and default retry and timeout', function(done) {
+        tcpPortUsed.waitUntilFree(44205)
+        .then(function() {
+            done();
+        }, function(err) {
+            done(err);
+        });
+    });
+
+    it('Should reject promise for invalid port number', function(done) {
+        tcpPortUsed.waitUntilFree()
+        .then(function() {
+            done(new Error('waitUntilFree unexpectedly succeeded'));
+        }, function(err) {
+            if (err.message === 'waitUntilFree: invalid port: undefined')
+                return done();
+            done(err);
         });
     });
 
@@ -161,7 +190,22 @@ describe('waitUntilUsed', function() {
         });
     });
 
-    it('should timeout when no port is ever ilstening', function(done) {
+    it('should reject promise when given an invalid port', function(done) {
+        this.timeout(3000);
+        tcpPortUsed.waitUntilUsed('hello', 500, 2000)
+        .then(function() {
+            debug('promise fulfilled.');
+            done(new Error('waitUntil used unexpectedly successful.'));
+        }, function(err) {
+            debug('promise rejected.');
+            if (err.message === 'waitUntilListening: invalid port: \'hello\'')
+                done();
+            else
+                done(err);
+        });
+    });
+
+    it('should timeout when no port is listening', function(done) {
         this.timeout(3000);
         tcpPortUsed.waitUntilUsed(44205, 500, 2000)
         .then(function() {
@@ -182,3 +226,4 @@ describe('waitUntilUsed', function() {
         });
     });
 });
+

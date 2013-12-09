@@ -31,7 +31,6 @@ var debug = require('debug')('tcp-port-used');
  * target port. Once bound, successfully, it's assume the port is availble.
  * After the socket is closed or in error, the promise is resolved.
  * Note: you have to be super user to correctly test system ports (0-1023).
- *
  * @param {Number} port The port you are curious to see if available.
  * @return {Object} A deferred Q promise.
  */
@@ -45,6 +44,14 @@ function check(port) {
 
     var server = net.createServer();
 
+    function cleanup() {
+        if (server) {
+            server.removeAllListeners('error');
+            server.removeAllListeners('listening');
+            server.removeAllListeners('close');
+        }
+    }
+
     server.once('error', function (err) {
         if (err.code === 'EADDRINUSE') {
             deferred.resolve(inUse);
@@ -52,10 +59,12 @@ function check(port) {
             debug('Unexpected error: '+util.inspect(err));
             deferred.reject(err);
         }
+        cleanup();
     });
 
     server.once('listening', function() {
         server.once('close', function() {
+            cleanup();
             deferred.resolve(!inUse);
         });
         server.close();
@@ -69,7 +78,6 @@ function check(port) {
  * Creates a deferred promise and fulfills it only when the socket is free.
  * Will retry on an interval specified in retryTimeMs.
  * Note: you have to be super user to correctly test system ports (0-1023).
- *
  * @param {Number} port a valid TCP port number
  * @param {Number} [retryTimeMs] the retry interval in milliseconds - defaultis is 100ms.
  * @param {Number} [timeOutMs] the amount of time to wait until port is free. Default 300ms.
@@ -106,6 +114,11 @@ function waitUntilFree(port, retryTimeMs, timeOutMs) {
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
+        if (server) {
+            server.removeAllListeners('close');
+            server.removeAllListeners('error');
+        }
+
     };
 
     server.on('error', function (err) {
@@ -133,7 +146,6 @@ function waitUntilFree(port, retryTimeMs, timeOutMs) {
  * Creates a deferred promise and fulfills it only when the socket is used.
  * Will retry on an interval specified in retryTimeMs.
  * Note: you have to be super user to correctly test system ports (0-1023).
- *
  * @param {Number} port a valid TCP port number
  * @param {Number} [retryTimeMs] the retry interval in milliseconds - defaultis is 500ms
  * @param {Number} [timeOutMs] the amount of time to wait until port is free
@@ -155,7 +167,6 @@ function waitUntilUsed(port, retryTimeMs, timeOutMs) {
 
     if (!is.positiveInt(timeOutMs))
         timeOutMs = 300;
-
 
     if (is.positiveInt(timeOutMs))
         timeoutId = setTimeout(function() { done = true; }, timeOutMs);
@@ -185,8 +196,8 @@ function waitUntilUsed(port, retryTimeMs, timeOutMs) {
 
         function cleanUp() {
             if (client) {
-                client.removeListener('connect', onConnectCb);
-                client.removeListener('error', onErrorCb);
+                client.removeAllListeners('connect');
+                client.removeAllListeners('error');
             }
 
             if (interval)
@@ -198,8 +209,8 @@ function waitUntilUsed(port, retryTimeMs, timeOutMs) {
             debug('timers removed');
         }
 
-        client.on('connect', onConnectCb);
-        client.on('error', onErrorCb);
+        client.once('connect', onConnectCb);
+        client.once('error', onErrorCb);
         client.connect({port: port});
 
     }, retryTimeMs);
