@@ -1,17 +1,6 @@
 /**
  * @fileOverview
  * A simple promises-based check to see if a TCP port is already in use.
- *
- * Example usage:
- *
- * var tcpPortUsed = require('tcp-port-used');
- *
- * tcpPortUsed.check(22)
- * .then(function(inUse) {
- *    debug('Port 22 usage: '+inUse);
- * }, function(err) {
- *    console.error('Error on check: '+util.inspect(err));
- * });
  */
 'use strict';
 
@@ -33,6 +22,16 @@ var debug = require('debug')('tcp-port-used');
  * Note: you have to be super user to correctly test system ports (0-1023).
  * @param {Number} port The port you are curious to see if available.
  * @return {Object} A deferred Q promise.
+ *
+ * Example usage:
+ *
+ * var tcpPortUsed = require('tcp-port-used');
+ * tcpPortUsed.check(22)
+ * .then(function(inUse) {
+ *    debug('Port 22 usage: '+inUse);
+ * }, function(err) {
+ *    console.error('Error on check: '+util.inspect(err));
+ * });
  */
 function check(port) {
 
@@ -81,6 +80,16 @@ function check(port) {
  * @param {Number} port a valid TCP port number
  * @param {Number} [retryTimeMs] the retry interval in milliseconds - defaultis is 100ms.
  * @param {Number} [timeOutMs] the amount of time to wait until port is free. Default 300ms.
+ *
+ * Example usage:
+ *
+ * var tcpPortUsed = require('tcp-port-used');
+ * tcpPortUsed.waitUntilFree(44203, 500, 4000)
+ * .then(function() {
+ *     console.log('Port 44203 is now free.');
+ *  }, function(err) {
+ *     console.loh('Error: ', error.message);
+ *  });
  */
 function waitUntilFree(port, retryTimeMs, timeOutMs) {
 
@@ -149,6 +158,16 @@ function waitUntilFree(port, retryTimeMs, timeOutMs) {
  * @param {Number} port a valid TCP port number
  * @param {Number} [retryTimeMs] the retry interval in milliseconds - defaultis is 500ms
  * @param {Number} [timeOutMs] the amount of time to wait until port is free
+ *
+ * Example usage:
+
+ * var tcpPortUsed = require('tcp-port-used');
+ * tcpPortUsed.waitUntilUsed(44204, 500, 4000)
+ * .then(function() {
+ *     console.log('Port 44204 is now in use.');
+ * }, function(err) {
+ *     console.log('Error: ', error.message);
+ * });
  */
 function waitUntilUsed(port, retryTimeMs, timeOutMs) {
 

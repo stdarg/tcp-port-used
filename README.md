@@ -28,7 +28,7 @@ To wait until a port is available:
     .then(function() {
         console.log('Port 44203 is now free.');
     }, function(err) {
-        console.loh('Error: ', error.message);
+        console.log('Error: ', error.message);
     });
 
 To wait until a port is accepting connections:
@@ -37,7 +37,7 @@ To wait until a port is accepting connections:
     .then(function() {
         console.log('Port 44204 is now in use.');
     }, function(err) {
-        console.loh('Error: ', error.message);
+        console.log('Error: ', error.message);
     });
 
 ## API
