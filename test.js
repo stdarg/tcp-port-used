@@ -376,3 +376,56 @@ describe('waitUntilUsed', function() {
     });
 });
 
+describe('waitForStatus', function() {
+
+    before(function() {
+        setTimeout(function() {
+            bindPort(44204);
+        }, 2000);
+    });
+
+    it('should wait until the port is listening', function(done) {
+        this.timeout(5000);
+        tcpPortUsed.waitForStatus(44204, '127.0.0.1', true, 500, 4000)
+        .then(function() {
+            done();
+        }, function(err) {
+            done(err);
+        });
+    });
+
+    it('should reject promise when given an invalid port', function(done) {
+        this.timeout(3000);
+        tcpPortUsed.waitForStatus('hello', '127.0.0.1', false, 500, 2000)
+        .then(function() {
+            done(new Error('waitUntil used unexpectedly successful.'));
+        }, function(err) {
+            if (err.message === 'invalid port: \'hello\'') {
+                done();
+            } else {
+                done(err);
+            }
+        });
+    });
+
+    it('should timeout when no port is listening', function(done) {
+        this.timeout(3000);
+        tcpPortUsed.waitUntilUsed(44205, '127.0.0.1', true, 500, 2000)
+        .then(function() {
+            done(new Error('waitUntil used unexpectedly successful.'));
+        }, function(err) {
+            if (err.message === 'timeout') {
+                done();
+            } else {
+                done(err);
+            }
+        });
+    });
+
+    after(function(cb) {
+        freePort(function(err) {
+            cb(err);
+        });
+    });
+});
+

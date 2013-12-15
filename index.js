@@ -10,6 +10,7 @@ exports.waitUntilFreeOnHost = waitUntilFreeOnHost;
 exports.waitUntilFree = waitUntilFree;
 exports.waitUntilUsedOnHost = waitUntilUsedOnHost;
 exports.waitUntilUsed = waitUntilUsed;
+exports.waitForStatus = waitForStatus;
 
 var is = require('is2');
 var Q = require('q');
@@ -93,49 +94,46 @@ function check(port, host) {
 }
 
 /**
- * Creates a deferred promise and fulfills it only when the socket is free.
- * Will retry on an interval specified in retryTimeMs.
- * Note: you have to be super user to correctly test system ports (0-1023).
+ * Creates a deferred promise and fulfills it only when the socket's usage
+ * equals status in terms of 'in use' (false === not in use, true === in use).
+ * Will retry on an interval specified in retryTimeMs.  Note: you have to be
+ * super user to correctly test system ports (0-1023).
  * @param {Number} port a valid TCP port number
- * @param {String} [host] The hostname or IP address of where the socket is.
- * @param {Number} [retryTimeMs] the retry interval in milliseconds - defaultis is 100ms.
- * @param {Number} [timeOutMs] the amount of time to wait until port is free. Default 300ms.
+ * @param {String} host The DNS name or IP address.
+ * @param {Boolean} status The desired in use status to wait for false === not in use, true === in use
+ * @param {Number} [retryTimeMs] the retry interval in milliseconds - defaultis is 200ms
+ * @param {Number} [timeOutMs] the amount of time to wait until port is free default is 1000ms
  *
  * Example usage:
  *
  * var tcpPortUsed = require('tcp-port-used');
- * tcpPortUsed.waitUntilFreeOnHost(44203, 'some.host.com', 500, 4000)
+ * tcpPortUsed.waitForStatus(44204, 'some.host.com', true, 500, 4000)
  * .then(function() {
- *     console.log('Port 44203 is now free.');
- *  }, function(err) {
- *     console.loh('Error: ', error.message);
- *  });
+ *     console.log('Port 44204 is now in use.');
+ * }, function(err) {
+ *     console.log('Error: ', error.message);
+ * });
  */
-function waitUntilFreeOnHost(port, host, retryTimeMs, timeOutMs) {
+function waitForStatus(port, host, status, retryTimeMs, timeOutMs) {
 
     var deferred = Q.defer();
+    var timeoutId;
     var timedout = false;
     var retryId;
-    var timeoutId;
 
-    if (!is.port(port)) {
-        deferred.reject(new Error('invalid port: '+util.inspect(port)));
+    if (!is.bool(status)) {
+        deferred.reject(new Error('status must be a boolean'));
         return deferred.promise;
     }
 
-    if (!is.nullOrUndefined(host)) {
-        host = '127.0.0.1';
-        debug('waitUntilUsedOnHost set host to default "127.0.0.1"');
-    }
-
-    if (!is.positiveInt(timeOutMs)) {
-        timeOutMs = RETRYTIME;
-        debug('waitUntilFreeOnHost set timeout to default '+TIMEOUT+'ms');
+    if (!is.positiveInt(retryTimeMs)) {
+        retryTimeMs = RETRYTIME;
+        debug('set retryTime to default '+RETRYTIME+'ms');
     }
 
     if (!is.positiveInt(timeOutMs)) {
         timeOutMs = TIMEOUT;
-        debug('waitUntilFreeOnHost set retryTime to default '+RETRYTIME+'ms');
+        debug('set timeOutMs to default '+TIMEOUT+'ms');
     }
 
     function cleanUp() {
@@ -160,12 +158,12 @@ function waitUntilFreeOnHost(port, host, retryTimeMs, timeOutMs) {
             if (timedout) {
                 return;
             }
-            if (inUse) {
-                retryId = setTimeout(function() { doCheck(); }, retryTimeMs);
-                return;
-            } else {
+            if (inUse === status) {
                 deferred.resolve();
                 cleanUp();
+                return;
+            } else {
+                retryId = setTimeout(function() { doCheck(); }, retryTimeMs);
                 return;
             }
         }, function(err) {
@@ -179,6 +177,29 @@ function waitUntilFreeOnHost(port, host, retryTimeMs, timeOutMs) {
 
     doCheck();
     return deferred.promise;
+}
+
+/**
+ * Creates a deferred promise and fulfills it only when the socket is free.
+ * Will retry on an interval specified in retryTimeMs.
+ * Note: you have to be super user to correctly test system ports (0-1023).
+ * @param {Number} port a valid TCP port number
+ * @param {String} [host] The hostname or IP address of where the socket is.
+ * @param {Number} [retryTimeMs] the retry interval in milliseconds - defaultis is 100ms.
+ * @param {Number} [timeOutMs] the amount of time to wait until port is free. Default 300ms.
+ *
+ * Example usage:
+ *
+ * var tcpPortUsed = require('tcp-port-used');
+ * tcpPortUsed.waitUntilFreeOnHost(44203, 'some.host.com', 500, 4000)
+ * .then(function() {
+ *     console.log('Port 44203 is now free.');
+ *  }, function(err) {
+ *     console.loh('Error: ', error.message);
+ *  });
+ */
+function waitUntilFreeOnHost(port, host, retryTimeMs, timeOutMs) {
+    return waitForStatus(port, host, false, retryTimeMs, timeOutMs);
 }
 
 /**
@@ -221,73 +242,7 @@ function waitUntilFree(port, retryTimeMs, timeOutMs) {
  * });
  */
 function waitUntilUsedOnHost(port, host, retryTimeMs, timeOutMs) {
-
-    var deferred = Q.defer();
-    var timeoutId;
-    var timedout = false;
-    var retryId;
-
-    if (!is.port(port)) {
-        deferred.reject(new Error('invalid port: '+util.inspect(port)));
-        return deferred.promise;
-    }
-
-    if (is.nullOrUndefined(host)) {
-        host = '127.0.0.1';
-        debug('waitUntilUsedOnHost set host to default "127.0.0.1"');
-    }
-
-    if (!is.positiveInt(retryTimeMs)) {
-        retryTimeMs = RETRYTIME;
-        debug('waitUntilUsedOnHost set retryTime to default '+RETRYTIME+'ms');
-    }
-
-    if (!is.positiveInt(timeOutMs)) {
-        timeOutMs = TIMEOUT;
-        debug('waitUntilUsedOnHost set timeOutMs to default '+TIMEOUT+'ms');
-    }
-
-    function cleanUp() {
-        if (timeoutId) {
-            clearTimeout(timeoutId);
-        }
-        if (retryId) {
-            clearTimeout(retryId);
-        }
-    }
-
-    function timeoutFunc() {
-        timedout = true;
-        cleanUp();
-        deferred.reject(new Error('timeout'));
-    }
-    timeoutId = setTimeout(timeoutFunc, timeOutMs);
-
-    function doCheck() {
-        check(port, host)
-        .then(function(inUse) {
-            if (timedout) {
-                return;
-            }
-            if (inUse) {
-                deferred.resolve();
-                cleanUp();
-                return;
-            } else {
-                retryId = setTimeout(function() { doCheck(); }, retryTimeMs);
-                return;
-            }
-        }, function(err) {
-            if (timedout) {
-                return;
-            }
-            deferred.reject(err);
-            cleanUp();
-        });
-    }
-
-    doCheck();
-    return deferred.promise;
+    return waitForStatus(port, host, true, retryTimeMs, timeOutMs);
 }
 
 /**
@@ -310,3 +265,4 @@ function waitUntilUsedOnHost(port, host, retryTimeMs, timeOutMs) {
 function waitUntilUsed(port, retryTimeMs, timeOutMs) {
     return waitUntilUsedOnHost(port, '127.0.0.1', retryTimeMs, timeOutMs);
 }
+
