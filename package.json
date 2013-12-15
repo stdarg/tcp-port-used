@@ -4,7 +4,7 @@
     "description": "A simple Node.js module to check if a TCP port is already bound.",
     "main": "index.js",
     "scripts": {
-        "test" : "./node_modules/.bin/mocha --reporter list"
+        "test" : "./node_modules/.bin/mocha --reporter=list ./test.js"
     },
     "repository": {
         "type": "git",
