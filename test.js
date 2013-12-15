@@ -49,88 +49,98 @@ function bindPort(port, cb) {
 }
 
 describe('check arguments', function() {
-    it('Should not accept negative port numbers', function() {
+    it('should not accept negative port numbers', function(done) {
         tcpPortUsed.check(-20, '127.0.0.1')
         .then(function() {
-            assert.ok(false);
+            done(new Error('check unexpectedly succeeded'));
         }, function(err) {
             assert.ok(err && err.message === 'invalid port: -20');
+            done();
         });
     });
-    it('Should not accept invalid types for port numbers', function() {
+    it('should not accept invalid types for port numbers', function(done) {
         tcpPortUsed.check('hello', '127.0.0.1')
         .then(function() {
-            assert.ok(false);
+            done(new Error('check unexpectedly succeeded'));
         }, function(err) {
-            assert.ok(err && err.message === 'invalid port: hello');
+            assert.ok(err && err.message === 'invalid port: \'hello\'');
+            done();
         });
     });
-    it('Should require an argument for a port number', function() {
+    it('should require an argument for a port number', function(done) {
         tcpPortUsed.check()
         .then(function() {
-            assert.ok(false);
+            done(new Error('check unexpectedly succeeded'));
         }, function(err) {
             assert.ok(err && err.message === 'invalid port: undefined');
+            done();
         });
     });
-    it('Should not accept port number > 65535', function() {
+    it('should not accept port number > 65535', function(done) {
         tcpPortUsed.check(65536)
         .then(function() {
-            assert.ok(false);
+            done(new Error('check unexpectedly succeeded'));
         }, function(err) {
             assert.ok(err && err.message === 'invalid port: 65536');
+            done();
         });
     });
-    it('Should not accept port number < 0', function() {
+    it('should not accept port number < 0', function(done) {
         tcpPortUsed.check(-1)
         .then(function() {
-            assert.ok(false);
+            done(new Error('check unexpectedly succeeded'));
         }, function(err) {
             assert.ok(err && err.message === 'invalid port: -1');
+            done();
         });
     });
 });
 
 describe('check functionality for unused port', function() {
-    before(function(cb) {
+    before(function(done) {
         bindPort(44202, function(err) {
-            cb(err);
+            done(err);
         });
     });
 
-    it('Should return true for a used port with default host value', function() {
+    it('should return true for a used port with default host value', function(done) {
         tcpPortUsed.check(44202)
         .then(function(inUse) {
             assert.ok(inUse === true);
-        }, function() {
-            assert.ok(false);
+            done();
+        }, function(err) {
+            done(err);
         });
     });
 
-    it('Should return true for a used port with given host value', function() {
+    it('should return true for a used port with given host value', function(done) {
         tcpPortUsed.check(44202, '127.0.0.1')
         .then(function(inUse) {
             assert.ok(inUse === true);
-        }, function() {
+            done();
+        }, function(err) {
             assert.ok(false);
+            done(err);
         });
     });
 
-    it('should return false for an unused port and default host', function() {
+    it('should return false for an unused port and default host', function(done) {
         tcpPortUsed.check(44201)
         .then(function(inUse) {
             assert.ok(inUse === false);
-        }, function() {
-            assert.ok(false);
+            done();
+        }, function(err) {
+            done(err);
         });
     });
 
-    it('should return false for an unused port and given default host', function() {
+    it('should return false for an unused port and given default host', function(done) {
         tcpPortUsed.check(44201, '127.0.0.1')
         .then(function(inUse) {
             assert.ok(inUse === false);
-        }, function() {
-            assert.ok(false);
+            done();
+        }, function(err) {
+            done(err);
         });
     });
 
@@ -150,7 +160,7 @@ describe('waitUntilFreeOnHost', function() {
         });
     });
 
-    it('Should reject promise for used port number after timeout', function(done) {
+    it('should reject promise for used port number after timeout', function(done) {
         tcpPortUsed.waitUntilFreeOnHost(44203, '127.0.0.1', 500, 1000)
         .then(function() {
             done(new Error('waitUntilFreeOnHost unexpectedly succeeded'));
@@ -162,7 +172,7 @@ describe('waitUntilFreeOnHost', function() {
         });
     });
 
-    it('Should fufill promise for free port number', function(done) {
+    it('should fufill promise for free port number', function(done) {
         tcpPortUsed.waitUntilFreeOnHost(44205, '127.0.0.1', 500, 4000)
         .then(function() {
             done();
@@ -171,7 +181,7 @@ describe('waitUntilFreeOnHost', function() {
         });
     });
 
-    it('Should fufill promise for free port number and default retry and timeout', function(done) {
+    it('should fufill promise for free port number and default retry and timeout', function(done) {
         tcpPortUsed.waitUntilFreeOnHost(44205)
         .then(function() {
             done();
@@ -180,7 +190,7 @@ describe('waitUntilFreeOnHost', function() {
         });
     });
 
-    it('Should reject promise for invalid port number', function(done) {
+    it('should reject promise for invalid port number', function(done) {
         tcpPortUsed.waitUntilFreeOnHost()
         .then(function() {
             done(new Error('waitUntilFreeOnHost unexpectedly succeeded'));
@@ -262,7 +272,7 @@ describe('waitUntilFree', function() {
         });
     });
 
-    it('Should reject promise for used port number after timeout', function(done) {
+    it('should reject promise for used port number after timeout', function(done) {
         tcpPortUsed.waitUntilFree(44203, 500, 4000)
         .then(function() {
             done(new Error('waitUntilFree unexpectedly succeeded'));
@@ -275,7 +285,7 @@ describe('waitUntilFree', function() {
         });
     });
 
-    it('Should fufill promise for free port number', function(done) {
+    it('should fufill promise for free port number', function(done) {
         tcpPortUsed.waitUntilFree(44205, 500, 4000)
         .then(function() {
             done();
@@ -284,7 +294,7 @@ describe('waitUntilFree', function() {
         });
     });
 
-    it('Should fufill promise for free port number and default retry and timeout', function(done) {
+    it('should fufill promise for free port number and default retry and timeout', function(done) {
         tcpPortUsed.waitUntilFree(44205)
         .then(function() {
             done();
@@ -293,7 +303,7 @@ describe('waitUntilFree', function() {
         });
     });
 
-    it('Should reject promise for invalid port number', function(done) {
+    it('should reject promise for invalid port number', function(done) {
         tcpPortUsed.waitUntilFree()
         .then(function() {
             done(new Error('waitUntilFreeOnHost: unexpectedly succeeded'));
