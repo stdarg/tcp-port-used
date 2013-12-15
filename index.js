@@ -51,7 +51,7 @@ function check(port, host) {
         return deferred.promise;
     }
 
-    if (!is.hostAddress(host)) {
+    if (is.nullOrUndefined(host)) {
         debug('set host address to default 127.0.0.1');
         host = '127.0.0.1';
     }
@@ -123,7 +123,7 @@ function waitUntilFreeOnHost(port, host, retryTimeMs, timeOutMs) {
         return deferred.promise;
     }
 
-    if (!is.hostAddress(host)) {
+    if (!is.nullOrUndefined(host)) {
         host = '127.0.0.1';
         debug('waitUntilUsedOnHost set host to default "127.0.0.1"');
     }
@@ -232,7 +232,7 @@ function waitUntilUsedOnHost(port, host, retryTimeMs, timeOutMs) {
         return deferred.promise;
     }
 
-    if (!is.hostAddress(host)) {
+    if (is.nullOrUndefined(host)) {
         host = '127.0.0.1';
         debug('waitUntilUsedOnHost set host to default "127.0.0.1"');
     }
