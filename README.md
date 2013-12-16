@@ -163,6 +163,7 @@ retryTime is 200 ms and the timeout is 2000 ms.
 
 * **Number** *port* a valid TCP port number
 * **String** *host* The host name or IP address of the host. Default, if not defined: '127.0.0.1'
+* **Boolean** *status* A boolean describing the condition to wait for in terms of "in use." True indicates wait until the port is in use. False indicates wait until the port is free.
 * **Number** *[retryTimeMs]* the retry interval in milliseconds - defaultis is 100ms.
 * **Number** *[timeOutMs]* the amount of time to wait until port is free. Default 300ms.
 
