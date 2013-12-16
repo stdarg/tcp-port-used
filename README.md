@@ -3,7 +3,7 @@ tcp-port-used
 
 A simple Node.js module to check if a TCP port is currently in use. It returns a
 deferred promise from the q library. Remember, you must have admin privelidges
-to successfully test the system ports, in the range of 0 to 1023.
+to successfully test the system ports in the range of 0 to 1023.
 
 ## Installation
 
@@ -79,7 +79,8 @@ in use and false means the port is free.
 
 **Parameters:**
 
-* **Number** *port* The port you are curious to see if available.
+* **Number|Object** *port* The port you are curious to see if available. If an
+  object, must contain all the parameters as properties.
 * **String** *host* The host name or IP address of the host. Default, if not defined: '127.0.0.1'
 
 **Returns:**
@@ -93,7 +94,8 @@ not defined the retryTime is 200 ms and the timeout is 2000 ms.
 
 **Parameters:**
 
-* **Number** *port* a valid TCP port number
+* **Number|Object** *port* a valid TCP port number. If an object must contain
+  all the parameters as properties.
 * **Number** *[retryTimeMs]* the retry interval in milliseconds - defaultis is 100ms.
 * **Number** *[timeOutMs]* the amount of time to wait until port is free. Default 300ms.
 
@@ -110,7 +112,8 @@ not defined, the modules uses the default '127.0.0.1'.
 
 **Parameters:**
 
-* **Number** *port* a valid TCP port number
+* **Number|Object** *port* a valid TCP port number. If an object, must contain
+  all the parameters as properties.
 * **String** *host* The host name or IP address of the host. Default, if not defined: '127.0.0.1'
 * **Number** *[retryTimeMs]* the retry interval in milliseconds - defaultis is 100ms.
 * **Number** *[timeOutMs]* the amount of time to wait until port is free. Default 300ms.
@@ -127,7 +130,8 @@ timeout. If the host is not defined the retryTime is 200 ms and the timeout is
 
 **Parameters:**
 
-* **Number** *port* a valid TCP port number
+* **Number|Object** *port* a valid TCP port number. If an object, must contain
+  all the parameters as properties.
 * **Number** *[retryTimeMs]* the retry interval in milliseconds - defaultis is 100ms.
 * **Number** *[timeOutMs]* the amount of time to wait until port is free. Default 300ms.
 
@@ -143,7 +147,8 @@ If the host is not defined the module uses the default '127.0.0.1'.
 
 **Parameters:**
 
-* **Number** *port* a valid TCP port number
+* **Number|Object** *port* a valid TCP port number. If an object, must contain
+  all the parameters as properties.
 * **String** *host* The host name or IP address of the host. Default, if not defined: '127.0.0.1'
 * **Number** *[retryTimeMs]* the retry interval in milliseconds - defaultis is 100ms.
 * **Number** *[timeOutMs]* the amount of time to wait until port is free. Default 300ms.
@@ -161,7 +166,8 @@ retryTime is 200 ms and the timeout is 2000 ms.
 
 **Parameters:**
 
-* **Number** *port* a valid TCP port number
+* **Number** *port* a valid TCP port number. If an object, must contain all the
+  parameters as properties.
 * **String** *host* The host name or IP address of the host. Default, if not defined: '127.0.0.1'
 * **Boolean** *status* A boolean describing the condition to wait for in terms of "in use." True indicates wait until the port is in use. False indicates wait until the port is free.
 * **Number** *[retryTimeMs]* the retry interval in milliseconds - defaultis is 100ms.

@@ -23,11 +23,31 @@ var TIMEOUT = 2000;
 var RETRYTIME = 250;
 
 /**
+ * Creates an options object from all the possible arguments
+ * @private
+ * @param {Number} port a valid TCP port number
+ * @param {String} host The DNS name or IP address.
+ * @param {Boolean} status The desired in use status to wait for: false === not in use, true === in use
+ * @param {Number} retryTimeMs the retry interval in milliseconds - defaultis is 200ms
+ * @param {Number} timeOutMs the amount of time to wait until port is free default is 1000ms
+ * @return {Object} An options object with all the above parameters as properties.
+ */
+function makeOptionsObj(port, host, inUse, retryTimeMs, timeOutMs) {
+    var opts = {};
+    opts.port = port;
+    opts.host = host;
+    opts.inUse = inUse;
+    opts.retryTimeMs = retryTimeMs;
+    opts.timeOutMs = timeOutMs;
+    return opts;
+}
+
+/**
  * Checks if a TCP port is in use by creating the socket and binding it to the
  * target port. Once bound, successfully, it's assume the port is availble.
  * After the socket is closed or in error, the promise is resolved.
  * Note: you have to be super user to correctly test system ports (0-1023).
- * @param {Number} port The port you are curious to see if available.
+ * @param {Number|Object} port The port you are curious to see if available. If an object, must have the parameters as properties.
  * @param {String} [host] May be a DNS name or IP address. Default '127.0.0.1'
  * @return {Object} A deferred Q promise.
  *
@@ -47,14 +67,22 @@ function check(port, host) {
     var inUse = true;
     var client;
 
-    if (!is.port(port)) {
-        deferred.reject(new Error('invalid port: '+util.inspect(port)));
+    var opts;
+    if (!is.obj(port)) {
+        opts = makeOptionsObj(port, host);
+    } else {
+        opts = port;
+    }
+
+    if (!is.port(opts.port)) {
+        debug('Error invalid port: '+util.inspect(opts.port));
+        deferred.reject(new Error('invalid port: '+util.inspect(opts.port)));
         return deferred.promise;
     }
 
-    if (is.nullOrUndefined(host)) {
+    if (is.nullOrUndefined(opts.host)) {
         debug('set host address to default 127.0.0.1');
-        host = '127.0.0.1';
+        opts.host = '127.0.0.1';
     }
 
     function cleanUp() {
@@ -75,13 +103,13 @@ function check(port, host) {
 
     function onErrorCb(err) {
         if (err.code !== 'ECONNREFUSED') {
-            debug('check - promise rejected, error: '+err.message);
+            //debug('check - promise rejected, error: '+err.message);
             deferred.reject(err);
             cleanUp();
         } else {
             //debug('ECONNREFUSED');
             inUse = false;
-            debug('check - promise resolved - not in use');
+            //debug('check - promise resolved - not in use');
             deferred.resolve(inUse);
             cleanUp();
         }
@@ -92,29 +120,9 @@ function check(port, host) {
     client = new net.Socket();
     client.once('connect', onConnectCb);
     client.once('error', onErrorCb);
-    client.connect({port: port, host: host});
+    client.connect({port: opts.port, host: opts.host});
 
     return deferred.promise;
-}
-
-/**
- * Creates an options object from all the possible arguments
- * @private
- * @param {Number} port a valid TCP port number
- * @param {String} host The DNS name or IP address.
- * @param {Boolean} status The desired in use status to wait for: false === not in use, true === in use
- * @param {Number} retryTimeMs the retry interval in milliseconds - defaultis is 200ms
- * @param {Number} timeOutMs the amount of time to wait until port is free default is 1000ms
- * @return {Object} An options object with all the above parameters as properties.
- */
-function makeOptionsObj(port, host, status, retryTimeMs, timeOutMs) {
-    var opts = {};
-    opts.port = port;
-    opts.host = host;
-    opts.status = status;
-    opts.retryTimeMs = retryTimeMs;
-    opts.timeOutMs = timeOutMs;
-    return opts;
 }
 
 /**
@@ -139,7 +147,7 @@ function makeOptionsObj(port, host, status, retryTimeMs, timeOutMs) {
  *     console.log('Error: ', error.message);
  * });
  */
-function waitForStatus(port, host, status, retryTimeMs, timeOutMs) {
+function waitForStatus(port, host, inUse, retryTimeMs, timeOutMs) {
 
     var deferred = Q.defer();
     var timeoutId;
@@ -151,13 +159,13 @@ function waitForStatus(port, host, status, retryTimeMs, timeOutMs) {
     if (is.obj(port)) {
         opts = port;
     } else {
-        opts = makeOptionsObj(port, host, status, retryTimeMs, timeOutMs);
+        opts = makeOptionsObj(port, host, inUse, retryTimeMs, timeOutMs);
     }
 
     //debug('opts:'+util.inspect(opts);
 
-    if (!is.bool(opts.status)) {
-        deferred.reject(new Error('status must be a boolean'));
+    if (!is.bool(opts.inUse)) {
+        deferred.reject(new Error('inUse must be a boolean'));
         return deferred.promise;
     }
 
@@ -194,8 +202,8 @@ function waitForStatus(port, host, status, retryTimeMs, timeOutMs) {
                 return;
             }
             //debug('doCheck inUse: '+inUse);
-            //debug('doCheck opts.status: '+opts.status);
-            if (inUse === opts.status) {
+            //debug('doCheck opts.inUse: '+opts.inUse);
+            if (inUse === opts.inUse) {
                 deferred.resolve();
                 cleanUp();
                 return;
@@ -242,6 +250,7 @@ function waitUntilFreeOnHost(port, host, retryTimeMs, timeOutMs) {
     var opts;
     if (is.obj(port)) {
         opts = port;
+        opts.inUse = false;
     } else {
         opts = makeOptionsObj(port, host, false, retryTimeMs, timeOutMs);
     }
@@ -273,6 +282,8 @@ function waitUntilFree(port, retryTimeMs, timeOutMs) {
     var opts;
     if (is.obj(port)) {
         opts = port;
+        opts.host = '127.0.0.1';
+        opts.inUse = false;
     } else {
         opts = makeOptionsObj(port, '127.0.0.1', false, retryTimeMs, timeOutMs);
     }
@@ -305,6 +316,7 @@ function waitUntilUsedOnHost(port, host, retryTimeMs, timeOutMs) {
     var opts;
     if (is.obj(port)) {
         opts = port;
+        opts.inUse = true;
     } else {
         opts = makeOptionsObj(port, host, true, retryTimeMs, timeOutMs);
     }
@@ -336,6 +348,8 @@ function waitUntilUsed(port, retryTimeMs, timeOutMs) {
     var opts;
     if (is.obj(port)) {
         opts = port;
+        opts.host = '127.0.0.1';
+        opts.inUse = true;
     } else {
         opts = makeOptionsObj(port, '127.0.0.1', true, retryTimeMs, timeOutMs);
     }
