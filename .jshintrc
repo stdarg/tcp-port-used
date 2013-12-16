@@ -1,6 +1,6 @@
 {
     "browser"       : false,
-    "curly"         : false,
+    "curly"         : true,
     "devel"         : false,
     "eqeqeq"        : true,
     "eqnull"        : true,
@@ -14,7 +14,6 @@
     "laxcomma"      : true,
     "maxcomplexity" : 39,
     "maxdepth"      : 5,
-    "maxlen"        : 110,
     "maxparams"     : 7,
     "maxstatements" : 100,
     "multistr"      : true,
@@ -30,7 +29,7 @@
     "strict"        : false,
     "swindent"      : true,
     "sub"           : true,
-    "trailing"      : true,
+    "trailing"      : false,
     "undef"         : true,
     "unused"        : true,
 
