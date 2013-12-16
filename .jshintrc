@@ -1,6 +1,6 @@
 {
     "browser"       : false,
-    "curly"         : false,
+    "curly"         : true,
     "devel"         : false,
     "eqeqeq"        : true,
     "eqnull"        : true,
@@ -10,7 +10,7 @@
     "forin"         : false,
     "immed"         : false,
     "indent"        : 4,
-    "latedef"       : false,
+    "latedef"       : true,
     "laxcomma"      : true,
     "maxcomplexity" : 39,
     "maxdepth"      : 5,
@@ -30,7 +30,7 @@
     "strict"        : false,
     "swindent"      : true,
     "sub"           : true,
-    "trailing"      : true,
+    "trailing"      : false,
     "undef"         : true,
     "unused"        : true,
 
