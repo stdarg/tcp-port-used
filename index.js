@@ -90,13 +90,15 @@ function check(port, host) {
             client.removeAllListeners('connect');
             client.removeAllListeners('error');
         }
+        client.end();
+        client.destroy();
+        client.unref();
         //debug('listeners removed from client socket');
     }
 
     function onConnectCb() {
         //debug('check - promise resolved - in use');
         deferred.resolve(inUse);
-        client.end();
         client.unref();
         cleanUp();
     }
@@ -105,16 +107,13 @@ function check(port, host) {
         if (err.code !== 'ECONNREFUSED') {
             //debug('check - promise rejected, error: '+err.message);
             deferred.reject(err);
-            cleanUp();
         } else {
             //debug('ECONNREFUSED');
             inUse = false;
             //debug('check - promise resolved - not in use');
             deferred.resolve(inUse);
-            cleanUp();
         }
-        client.destroy();
-        client.unref();
+        cleanUp();
     }
 
     client = new net.Socket();
