@@ -89,17 +89,16 @@ function check(port, host) {
         if (client) {
             client.removeAllListeners('connect');
             client.removeAllListeners('error');
+            client.end();
+            client.destroy();
+            client.unref();
         }
-        client.end();
-        client.destroy();
-        client.unref();
         //debug('listeners removed from client socket');
     }
 
     function onConnectCb() {
         //debug('check - promise resolved - in use');
         deferred.resolve(inUse);
-        client.unref();
         cleanUp();
     }
 
