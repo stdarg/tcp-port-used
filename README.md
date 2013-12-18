@@ -2,8 +2,7 @@ tcp-port-used
 =============
 
 A simple Node.js module to check if a TCP port is currently in use. It returns a
-deferred promise from the q library. Remember, you must have admin privelidges
-to successfully test the system ports in the range of 0 to 1023.
+deferred promise from the q library.
 
 ## Installation
 
@@ -69,7 +68,6 @@ To wait until a port on a host is in specific state:
 
 
 ## API
-
 
 ### check(port [, host])
 Checks if a TCP port is in use by attempting to connect to the port on host.
