@@ -1,6 +1,6 @@
 {
     "name": "tcp-port-used",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "A simple Node.js module to check if a TCP port is already bound.",
     "main": "index.js",
     "scripts": {
