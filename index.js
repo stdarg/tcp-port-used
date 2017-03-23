@@ -239,7 +239,7 @@ function waitForStatus(port, host, inUse, retryTimeMs, timeOutMs) {
  * .then(function() {
  *     console.log('Port 44203 is now free.');
  *  }, function(err) {
- *     console.loh('Error: ', error.message);
+ *     console.log('Error: ', error.message);
  *  });
  */
 function waitUntilFreeOnHost(port, host, retryTimeMs, timeOutMs) {
@@ -271,7 +271,7 @@ function waitUntilFreeOnHost(port, host, retryTimeMs, timeOutMs) {
  * .then(function() {
  *     console.log('Port 44203 is now free.');
  *  }, function(err) {
- *     console.loh('Error: ', error.message);
+ *     console.log('Error: ', error.message);
  *  });
  */
 function waitUntilFree(port, retryTimeMs, timeOutMs) {
