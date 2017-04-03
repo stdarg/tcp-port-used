@@ -11,12 +11,14 @@ exports.waitUntilFree = waitUntilFree;
 exports.waitUntilUsedOnHost = waitUntilUsedOnHost;
 exports.waitUntilUsed = waitUntilUsed;
 exports.waitForStatus = waitForStatus;
+exports.findFree = findFree;
 
 var is = require('is2');
 var Q = require('q');
 var net = require('net');
 var util = require('util');
 var debug = require('debug')('tcp-port-used');
+var async = require('async');
 
 // Global Values
 var TIMEOUT = 2000;
@@ -354,4 +356,43 @@ function waitUntilUsed(port, retryTimeMs, timeOutMs) {
 
     return waitUntilUsedOnHost(opts);
 }
+
+/**
+ * Find currently open port with a given port range. It simply uses check()
+ * recursively for each port until it finds an available port.
+ * min/max ports are checked inclusively (10~19 will check both 10 and 19)
+ * if no ports are available, the promise will be rejected
+ *
+ * Example usage:
+ *
+ * var tcpPortUsed = require('tcp-port-used');
+ * tcpPortUsed.findFree(11000, 12000, '127.0.0.1')
+ * .then(function(port) {
+ *    debug(port,"is available");
+ * }, function(err) {
+ *    console.error('Error on findFree: '+util.inspect(err));
+ * });
+ */
+function findFree(min_port, max_port, host) {
+
+    var deferred = Q.defer();
+
+    //create a list of ports
+    var ports = [];
+    for(var p = min_port; p <= max_port; ++p) ports.push(p);
+
+    //then itereate
+    async.eachSeries(ports, (p, next)=>{
+        exports.check(p, host).then(inuse=>{
+            if(inuse) next();
+            else deferred.resolve(p);
+        }, next);
+    }, (err)=>{
+        if(err) deferred.reject(err);
+        else deferred.reject(new Error("Couldn't find an open port"));
+    });
+
+    return deferred.promise;
+}
+
 
