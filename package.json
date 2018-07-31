@@ -26,8 +26,7 @@
     "homepage": "https://github.com/jut-io/tcp-port-used",
     "dependencies": {
         "debug": "^3.1.0",
-        "is2": "0.0.9",
-        "q": "0.9.7"
+        "is2": "0.0.9"
     },
     "devDependencies": {
         "mocha": "1.15.0"
