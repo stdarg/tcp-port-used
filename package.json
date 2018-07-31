@@ -29,6 +29,6 @@
         "is2": "2.0.1"
     },
     "devDependencies": {
-        "mocha": "1.15.0"
+        "mocha": "5.2.0"
     }
 }
