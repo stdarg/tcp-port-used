@@ -1,10 +1,10 @@
 {
     "name": "tcp-port-used",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "A simple Node.js module to check if a TCP port is already bound.",
     "main": "index.js",
     "scripts": {
-        "test" : "./node_modules/.bin/mocha --reporter=list ./test.js"
+        "test": "./node_modules/.bin/mocha --reporter=list ./test.js"
     },
     "repository": {
         "type": "git",
@@ -25,7 +25,7 @@
     },
     "homepage": "https://github.com/jut-io/tcp-port-used",
     "dependencies": {
-        "debug": "0.7.4",
+        "debug": "^3.1.0",
         "is2": "0.0.9",
         "q": "0.9.7"
     },
