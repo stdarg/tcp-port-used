@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "A simple Node.js module to check if a TCP port is already bound.",
     "main": "index.js",
+    "types": "index.d.ts",
     "scripts": {
         "test": "./node_modules/.bin/mocha --reporter=list ./test.js"
     },
@@ -30,5 +31,6 @@
     },
     "devDependencies": {
         "mocha": "5.2.0"
-    }
+    },
+    "typeScriptVersion": "3.1.2"
 }
