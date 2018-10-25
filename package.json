@@ -25,10 +25,10 @@
     },
     "homepage": "https://github.com/stdarg/tcp-port-used",
     "dependencies": {
-        "debug": "3.1.0",
+        "debug": "4.1.0",
         "is2": "2.0.1"
     },
     "devDependencies": {
-        "mocha": "5.2.0"
+        "mocha": "^5.2.0"
     }
 }
