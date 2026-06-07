@@ -21,7 +21,7 @@
     "author": "Edmond Meinfelder",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/stdargtcp-port-used/issues"
+        "url": "https://github.com/stdarg/tcp-port-used/issues"
     },
     "homepage": "https://github.com/stdarg/tcp-port-used",
     "dependencies": {
