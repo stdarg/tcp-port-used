@@ -11,60 +11,72 @@ deferred promise from the q library.
 ## Examples
 To check a port's state:
 
-    var tcpPortUsed = require('tcp-port-used');
+```js
+var tcpPortUsed = require('tcp-port-used');
 
-    tcpPortUsed.check(44201, '127.0.0.1')
-    .then(function(inUse) {
-        console.log('Port 44201 usage: '+inUse);
-    }, function(err) {
-        console.error('Error on check:', err.message);
-    });
+tcpPortUsed.check(44201, '127.0.0.1')
+.then(function(inUse) {
+    console.log('Port 44201 usage: '+inUse);
+}, function(err) {
+    console.error('Error on check:', err.message);
+});
+```
 
 To wait until a port on localhost is available:
 
-    tcpPortUsed.waitUntilFree(44203, 500, 4000)
-    .then(function() {
-        console.log('Port 44203 is now free.');
-    }, function(err) {
-        console.log('Error:', err.message);
-    });
+```js
+tcpPortUsed.waitUntilFree(44203, 500, 4000)
+.then(function() {
+    console.log('Port 44203 is now free.');
+}, function(err) {
+    console.log('Error:', err.message);
+});
+```
 
 To wait until a port on a host is available:
 
-    tcpPortUsed.waitUntilFreeOnHost(44203, 'some.host.com', 500, 4000)
-    .then(function() {
-        console.log('Port 44203 on some.host.com is now free.');
-    }, function(err) {
-        console.log('Error:', err.message);
-    });
+```js
+tcpPortUsed.waitUntilFreeOnHost(44203, 'some.host.com', 500, 4000)
+.then(function() {
+    console.log('Port 44203 on some.host.com is now free.');
+}, function(err) {
+    console.log('Error:', err.message);
+});
+```
 
 To wait until a port on localhost is accepting connections:
 
-    tcpPortUsed.waitUntilUsed(44204, 500, 4000)
-    .then(function() {
-        console.log('Port 44204 is now in use.');
-    }, function(err) {
-        console.log('Error:', err.message);
-    });
+```js
+tcpPortUsed.waitUntilUsed(44204, 500, 4000)
+.then(function() {
+    console.log('Port 44204 is now in use.');
+}, function(err) {
+    console.log('Error:', err.message);
+});
+```
 
 To wait until a port on a host is accepting connections:
 
-    tcpPortUsed.waitUntilUsedOnHost(44204, 'some.host.com', 500, 4000)
-    .then(function() {
-        console.log('Port 44204 on some.host.com is now in use.');
-    }, function(err) {
-        console.log('Error:', err.message);
-    });
+```js
+tcpPortUsed.waitUntilUsedOnHost(44204, 'some.host.com', 500, 4000)
+.then(function() {
+    console.log('Port 44204 on some.host.com is now in use.');
+}, function(err) {
+    console.log('Error:', err.message);
+});
+```
 
 To wait until a port on a host is in specific state:
 
-    var inUse = true;   // wait until the port is in use
-    tcpPortUsed.waitForStatus(44204, 'some.host.com', inUse, 500, 4000)
-    .then(function() {
-        console.log('Port 44204 on some.host.com is now in use.');
-    }, function(err) {
-        console.log('Error:', err.message);
-    });
+```js
+var inUse = true;   // wait until the port is in use
+tcpPortUsed.waitForStatus(44204, 'some.host.com', inUse, 500, 4000)
+.then(function() {
+    console.log('Port 44204 on some.host.com is now in use.');
+}, function(err) {
+    console.log('Error:', err.message);
+});
+```
 
 
 ## API
